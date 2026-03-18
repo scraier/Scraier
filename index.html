@@ -4,17 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scraier</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500&family=Barlow:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500;700&family=Barlow:wght@300;400;500;600&display=swap');
 
 :root {
 --bg: #080b0f;
 --surface: #0c1118;
+--surface2: #111922;
 --border: #1c2b3a;
+--border2: #243447;
 --accent: #00d4ff;
 --green: #00ff88;
+--red: #ff3355;
 --yellow: #ffcc00;
---purple: #a855f7;
 --text: #e0eff8;
 --text2: #6a95b0;
 --text3: #3a6080;
@@ -51,7 +54,7 @@ body::before {
   z-index: 1;
   width: 100%;
   max-width: 900px;
-  padding: 60px 24px;
+  padding: 40px 24px;
   text-align: center;
 }
 
@@ -70,14 +73,137 @@ body::before {
   letter-spacing: 4px;
   color: var(--text3);
   text-transform: uppercase;
-  margin-bottom: 70px;
+  margin-bottom: 50px;
 }
+
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 420px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.auth-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.form-input {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(0,212,255,0.08);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-primary:hover { background: #00eeff; box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.auth-switch a { color: var(--accent); cursor: pointer; }
+.auth-switch a:hover { text-decoration: underline; }
+
+.msg {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.msg.success { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); color: var(--green); }
+.msg.error { background: rgba(255,51,85,0.08); border: 1px solid rgba(255,51,85,0.2); color: var(--red); }
+.msg.info { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+
+.user-info { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); }
+.user-email { color: var(--accent); font-size: 12px; }
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
 
 .apps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
 }
 
 .app-card {
@@ -95,111 +221,229 @@ body::before {
   overflow: hidden;
 }
 
-.app-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  transition: opacity 0.25s;
-}
-
+.app-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
 .app-card.edge::before { background: var(--accent); }
 .app-card.vault::before { background: var(--green); }
-.app-card.field::before { background: var(--yellow); opacity: 0.4; }
+.app-card.field::before { background: var(--yellow); opacity:0.4; }
 
-.app-card:hover {
-  transform: translateY(-4px);
-  border-color: #243447;
-}
-
+.app-card:hover { transform: translateY(-4px); border-color: #243447; }
 .app-card.edge:hover { box-shadow: 0 8px 30px rgba(0,212,255,0.1); }
 .app-card.vault:hover { box-shadow: 0 8px 30px rgba(0,255,136,0.1); }
-.app-card.field:hover { box-shadow: 0 8px 30px rgba(255,204,0,0.08); }
 
-.app-name {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 32px;
-  letter-spacing: 6px;
-}
-
+.app-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 6px; }
 .app-card.edge .app-name { color: var(--accent); }
 .app-card.vault .app-name { color: var(--green); }
-.app-card.field .app-name { color: var(--yellow); opacity: 0.5; }
+.app-card.field .app-name { color: var(--yellow); opacity:0.5; }
 
-.app-desc {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--text3);
-  text-transform: uppercase;
-  line-height: 1.6;
+.app-desc { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; line-height: 1.6; text-align: center; }
+
+.app-status { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border-radius: 4px; margin-top: 4px; }
+.status-live { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+.status-soon { background: rgba(255,204,0,0.06); color: var(--yellow); border: 1px solid rgba(255,204,0,0.15); opacity:0.6; }
+
+.footer { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 2px; }
+
+.pending-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,204,0,0.3);
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 420px;
+  margin: 0 auto 40px;
+  text-align: center;
 }
 
-.app-status {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  margin-top: 4px;
-}
+.pending-icon { font-size: 48px; margin-bottom: 16px; opacity:0.6; }
+.pending-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 4px; color: var(--yellow); margin-bottom: 12px; }
+.pending-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); line-height: 1.8; letter-spacing: 1px; }
 
-.status-live {
-  background: rgba(0,255,136,0.08);
-  color: var(--green);
-  border: 1px solid rgba(0,255,136,0.2);
-}
+.loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 3px; }
+.spinner { width:16px; height:16px; border:2px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.status-soon {
-  background: rgba(255,204,0,0.06);
-  color: var(--yellow);
-  border: 1px solid rgba(255,204,0,0.15);
-  opacity: 0.6;
-}
-
-.footer {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--text3);
-  letter-spacing: 2px;
-}
-
-@media(max-width: 600px) {
-  .logo { font-size: 52px; letter-spacing: 10px; }
-  .apps { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 50px; }
+@media(max-width:600px) {
+  .logo { font-size:52px; letter-spacing:10px; }
+  .apps { grid-template-columns:1fr; max-width:320px; margin:0 auto 40px; }
+  .auth-card { padding:24px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="logo">SCRAIER</div>
   <div class="tagline">Tools built from the field up</div>
 
-  <div class="apps">
+  <!-- LOADING -->
+  <div id="s-loading">
+    <div class="loading"><div class="spinner"></div>INITIALIZING</div>
+  </div>
 
-    <a href="edge-journal.html" class="app-card edge">
-      <div class="app-name">EDGE</div>
-      <div class="app-desc">Trading Journal<br>123 System</div>
-      <div class="app-status status-live">LIVE</div>
-    </a>
+  <!-- AUTH -->
+  <div id="s-auth" style="display:none">
 
-    <a href="vault.html" class="app-card vault">
-      <div class="app-name">VAULT</div>
-      <div class="app-desc">Financial<br>Intelligence</div>
-      <div class="app-status status-live">LIVE</div>
-    </a>
+    <div id="f-login" class="auth-card">
+      <div class="auth-title">Sign In</div>
+      <div id="m-login" class="msg" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="login-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="signIn()">SIGN IN</button>
+      <div class="auth-switch">No account? <a onclick="showReg()">Request access</a></div>
+    </div>
 
-    <a href="#" class="app-card field">
-      <div class="app-name">FIELD</div>
-      <div class="app-desc">Job Site<br>Management</div>
-      <div class="app-status status-soon">COMING SOON</div>
-    </a>
+    <div id="f-register" class="auth-card" style="display:none">
+      <div class="auth-title">Request Access</div>
+      <div id="m-register" class="msg" style="display:none"></div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="reg-name" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="reg-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="reg-password" placeholder="Min 8 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="reg-confirm" placeholder="Repeat password">
+      </div>
+      <button class="btn-primary" id="btn-register" onclick="signUp()">REQUEST ACCESS</button>
+      <div class="auth-switch">Already approved? <a onclick="showLogin()">Sign in</a></div>
+    </div>
+
+    <div id="f-pending" style="display:none">
+      <div class="pending-card">
+        <div class="pending-icon">⏳</div>
+        <div class="pending-title">Pending Approval</div>
+        <div class="pending-text">
+          Your account is awaiting admin approval.<br><br>
+          Check your email to confirm your address.<br>
+          You will be notified once access is granted.
+        </div>
+      </div>
+      <div class="auth-switch"><a onclick="signOut()">Sign out</a></div>
+    </div>
 
   </div>
 
-  <div class="footer">© 2026 SCRAIER — ALL RIGHTS RESERVED</div>
+  <!-- DASHBOARD -->
+  <div id="s-dashboard" style="display:none">
+    <div class="user-bar">
+      <div class="user-info">
+        <div style="margin-bottom:2px">SIGNED IN AS</div>
+        <div class="user-email" id="user-email">—</div>
+      </div>
+      <button class="btn-logout" onclick="signOut()">SIGN OUT</button>
+    </div>
+    <div class="apps">
+      <a href="Edge-journal.html" class="app-card edge">
+        <div class="app-name">EDGE</div>
+        <div class="app-desc">Trading Journal<br>123 System</div>
+        <div class="app-status status-live">LIVE</div>
+      </a>
+      <a href="Vault.html" class="app-card vault">
+        <div class="app-name">VAULT</div>
+        <div class="app-desc">Financial<br>Intelligence</div>
+        <div class="app-status status-live">LIVE</div>
+      </a>
+      <div class="app-card field">
+        <div class="app-name">FIELD</div>
+        <div class="app-desc">Job Site<br>Management</div>
+        <div class="app-status status-soon">COMING SOON</div>
+      </div>
+    </div>
+    <div class="footer">© 2026 SCRAIER — ALL RIGHTS RESERVED</div>
+  </div>
 
 </div>
+
+<script>
+const SURL = 'https://byvrmmwwjggafaioxtfc.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dnJtbXd3amdnYWZhaW94dGZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTE4NzQsImV4cCI6MjA4OTM2Nzg3NH0.-7WZSYs3n1PtQ79Z5TJXKJgcRM-Jif97eb_Laq0Vj0E';
+const sb = supabase.createClient(SURL, SKEY);
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  session ? await handleUser(session) : showAuth();
+  sb.auth.onAuthStateChange(async (e, s) => {
+    if(e === 'SIGNED_IN' && s) await handleUser(s);
+    else if(e === 'SIGNED_OUT') showAuth();
+  });
+}
+
+async function handleUser(session) {
+  const approved = session.user.user_metadata?.approved === true;
+  approved ? showDash(session.user.email) : showPending();
+}
+
+async function signIn() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const btn = document.getElementById('btn-login');
+  if(!email || !pass) { msg('m-login','error','Enter email and password.'); return; }
+  btn.disabled = true; btn.textContent = 'SIGNING IN...'; clearMsg('m-login');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if(error) { msg('m-login','error', error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message); btn.disabled=false; btn.textContent='SIGN IN'; return; }
+  await handleUser(data.session);
+  btn.disabled=false; btn.textContent='SIGN IN';
+}
+
+async function signUp() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-password').value;
+  const conf = document.getElementById('reg-confirm').value;
+  const btn = document.getElementById('btn-register');
+  if(!name||!email||!pass) { msg('m-register','error','All fields required.'); return; }
+  if(pass.length < 8) { msg('m-register','error','Password must be 8+ characters.'); return; }
+  if(pass !== conf) { msg('m-register','error','Passwords do not match.'); return; }
+  btn.disabled=true; btn.textContent='SUBMITTING...'; clearMsg('m-register');
+  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name, approved: false }, emailRedirectTo: 'https://scraier.com' }});
+  if(error) { msg('m-register','error', error.message); btn.disabled=false; btn.textContent='REQUEST ACCESS'; return; }
+  msg('m-register','success','Request submitted! Check your email to confirm your address. You will receive access once approved by the admin.');
+  btn.disabled=false; btn.textContent='REQUEST ACCESS';
+}
+
+async function signOut() { await sb.auth.signOut(); }
+
+function showAuth() { hide('s-loading'); hide('s-dashboard'); show('s-auth'); showLogin(); }
+function showLogin() { show('f-login'); hide('f-register'); hide('f-pending'); }
+function showReg() { hide('f-login'); show('f-register'); hide('f-pending'); }
+function showPending() { hide('s-loading'); hide('s-dashboard'); show('s-auth'); hide('f-login'); hide('f-register'); show('f-pending'); }
+function showDash(email) { hide('s-loading'); hide('s-auth'); show('s-dashboard'); document.getElementById('user-email').textContent = email; }
+
+function show(id) { document.getElementById(id).style.display=''; }
+function hide(id) { document.getElementById(id).style.display='none'; }
+
+function msg(id, type, text) {
+  const el = document.getElementById(id);
+  el.className = 'msg ' + type;
+  el.textContent = text;
+  el.style.display = 'block';
+}
+
+function clearMsg(id) {
+  const el = document.getElementById(id);
+  el.className = 'msg';
+  el.textContent = '';
+  el.style.display = 'none';
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  if(document.getElementById('f-login').style.display !== 'none') signIn();
+  else if(document.getElementById('f-register').style.display !== 'none') signUp();
+});
+
+init();
+</script>
 </body>
 </html>
